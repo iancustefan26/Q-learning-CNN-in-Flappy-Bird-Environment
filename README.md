@@ -1,4 +1,13 @@
 # (Under Development) Q-learning-CNN-in-Flappy-Bird-Enviroment
-A neural network using the Q learning algorithm to control an agent in the Flappy Bird game.
+A Deep Q-Learning agent that learns to play Flappy Bird directly from pixels using a CNN in PyTorch.
+The Q-learning algorithm is implemented from scratch.
 
-Implemented the NN using PyTorch and the Q-learning algorithm from scratch.
+# Core Focus
+
+- Reinforcement Learning
+- Convolutional Neural Networks
+- Stabilization techniques: 
+  - Replay buffer
+  - Target network
+  - Epsilon-greedy exploration
+  - Gradient clipping
