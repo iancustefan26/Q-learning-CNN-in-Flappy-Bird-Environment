@@ -1,3 +1,0 @@
-imagine -> imagine_normalizata_rgb (0, 1) ->
-((conv2d -> relu) * n -> max_pool(f, s)) * m
--> 2 hidden layers Q network(x, y) -> softmax -> 2 outputs for each action
