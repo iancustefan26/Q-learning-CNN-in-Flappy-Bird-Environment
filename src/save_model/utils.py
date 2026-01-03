@@ -63,7 +63,7 @@ def load_model(
     return global_step, best_reward
 
 def transition(action, env, frame_skip):
-    global frame_id
+    # global frame_id
 
     frame_stack = []
     total_reward = 0
@@ -88,10 +88,10 @@ def transition(action, env, frame_skip):
         total_reward += reward
         done = terminated or truncated
 
-        # Image.fromarray(frame).save(
-        #     f"{PHOTOS_DIR}/frame_{'died_' if done else ''}{frame_id:05d}.png"
-        # )
-        frame_id += 1
+        # # Image.fromarray(frame).save(
+        # #     f"{PHOTOS_DIR}/frame_{'died_' if done else ''}{frame_id:05d}.png"
+        # # )
+        # frame_id += 1
 
     return np.stack(frame_stack), total_reward, done
 
