@@ -1,70 +1,86 @@
 import torch
 import torch.nn as nn
+
+import os
+import torchvision.utils as vutils
+
+def save_input_frames(x, filename):
+    """
+    x: (B, frame_skip, H, W)
+    Saves the stacked input frames as a grid
+    """
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+    frames = x[0]                  # (frame_skip, H, W)
+    frames = frames.unsqueeze(1)   # (frame_skip, 1, H, W)
+
+    grid = vutils.make_grid(
+        frames,
+        nrow=frames.shape[0],
+        normalize=True,
+        scale_each=True
+    )
+
+    vutils.save_image(grid, filename)
+
+def save_feature_maps(x, filename, max_channels=32):
+    """
+    x: (B, C, H, W)
+    """
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+    fmap = x[0][:max_channels]     # (C, H, W)
+    fmap = fmap.unsqueeze(1)       # (C, 1, H, W)
+
+    grid = vutils.make_grid(
+        fmap,
+        nrow=8,
+        normalize=True,
+        scale_each=True
+    )
+
+    vutils.save_image(grid, filename)
+
+def vis_hook(name, step_getter):
+    def hook(module, input, output):
+        step = step_getter()
+        save_feature_maps(
+            output.detach().cpu(),
+            f"vis/step_{step:06d}_{name}.png"
+        )
+    return hook
+
 class DQN_CNN(nn.Module):
-    def __init__(self, frame_skip = 4):
-        super(DQN_CNN, self).__init__()
+    def __init__(self, frame_skip=4):
+        super().__init__()
+        self.step = 0
 
-        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.pool = nn.MaxPool2d(2, 2)
 
-         #w 82 - 7 + 2 * 3 / 2 + 1 = 41
+        self.conv1 = nn.Conv2d(frame_skip, 4, 7, 2, 3)
+        self.conv2 = nn.Conv2d(4, 8, 3, 1, 1)
 
-         #w maxpool
-         #w 41 / 2 = 20 out
+        self.fc1 = nn.Linear(8 * 10 * 17, 128)
+        self.fc2 = nn.Linear(128, 2)
 
-         #h 136 - 7 + 2 * 3 / 2 + 1 = 68
+        # hooks
+        #self.conv1.register_forward_hook(vis_hook("conv1", lambda: self.step))
+        #self.conv2.register_forward_hook(vis_hook("conv2", lambda: self.step))
 
-        #h maxpool
-        #h 68 / 2 = 34 out
-        self.conv1 = nn.Conv2d(
-            in_channels=frame_skip,
-            out_channels=16,
-            kernel_size=7,
-            stride=2,
-            padding=3,
-        )
-
-
-        #w maxpool
-        #w 20 / 2 = 10 out
-
-        #h maxpool
-        #h 34 / 2 = 17 out
-        self.conv2 = nn.Conv2d(
-            in_channels=16,
-            out_channels=32,
-            kernel_size=3,
-            stride=1,
-            padding=1,
-        )
-
-
-        self.fc1 = nn.Linear(32 * 10 * 17, 128)
-        self.fc2 = nn.Linear(128, 2)  # Assuming 2 actions: flap or not flap
-
-        conv_layers = nn.Sequential(
+        self.net = nn.Sequential(
             self.conv1,
             nn.ReLU(),
             self.pool,
             self.conv2,
             nn.ReLU(),
             self.pool,
-        )
-
-        linear_layers = nn.Sequential(
+            nn.Flatten(),
             self.fc1,
             nn.LayerNorm(128),
             nn.ReLU(),
-            self.fc2    
-        )
-
-        self.layers = nn.Sequential(
-            conv_layers,
-            nn.Flatten(),
-            linear_layers
+            self.fc2
         )
 
     def forward(self, x):
-        return self.layers(x)
-
-
-
+        self.step += 1
+        return self.net(x)

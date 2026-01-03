@@ -59,6 +59,39 @@ def load_model(
 
     return global_step, best_reward
 
+def transition(action, env, frame_skip):
+    global frame_id
+
+    frame_stack = []
+    total_reward = 0
+    done = False
+
+    _, reward, terminated, truncated, _ = env.step(action)
+    frame = preprocess_frame(env.render())
+    frame_stack.append(frame)
+
+    total_reward += reward
+    done = terminated or truncated
+
+    for _ in range(frame_skip - 1):
+        if done:
+            frame_stack.append(frame)  # pad with last frame
+            continue
+
+        _, reward, terminated, truncated, _ = env.step(0)
+        frame = preprocess_frame(env.render())
+        frame_stack.append(frame)
+
+        total_reward += reward
+        done = terminated or truncated
+
+        # Image.fromarray(frame).save(
+        #     f"{PHOTOS_DIR}/frame_{'died_' if done else ''}{frame_id:05d}.png"
+        # )
+        #frame_id += 1
+
+    return np.stack(frame_stack), total_reward, done
+
 
 def record_trained_agent_video(
     model_path="checkpoints/flappy_dqn.pt",
@@ -88,31 +121,20 @@ def record_trained_agent_video(
     env.reset()
     frame_stack = deque(maxlen=frame_skip)
 
-    frame = preprocess_frame(env.render())
-    for _ in range(frame_skip):
-        frame_stack.append(frame)
-
     done = False
     total_reward = 0
 
     # ---------- play episode ----------
-    while not done:
-        state = np.stack(frame_stack, axis=0)
+    current_state, _, _ = transition(0, env, frame_skip)
 
+    while not done:
         with torch.no_grad():
-            state_t = torch.tensor(state, dtype=torch.float32).unsqueeze(0).to(device)
+            state_t = torch.tensor(current_state, dtype=torch.float32).unsqueeze(0).to(device)
             action = policy_net(state_t).argmax(dim=1).item()
 
-        reward_sum = 0
-        for _ in range(frame_skip):
-            _, reward, terminated, truncated, _ = env.step(action)
-            reward_sum += reward
-            done = terminated or truncated
-            if done:
-                break
+        next_state, reward_sum, done = transition(action, env, frame_skip)
+        current_state = next_state
 
-        frame = preprocess_frame(env.render())
-        frame_stack.append(frame)
         total_reward += reward_sum
 
     env.close()
