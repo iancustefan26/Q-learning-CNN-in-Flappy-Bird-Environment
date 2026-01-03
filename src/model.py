@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-
 class DQN_CNN(nn.Module):
     def __init__(self, frame_skip = 4):
         super(DQN_CNN, self).__init__()
