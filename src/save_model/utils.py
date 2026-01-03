@@ -8,7 +8,10 @@ import gymnasium as gym
 import numpy as np
 from model import DQN_CNN
 from preprocessing.preprocessing import preprocess_frame
+from PIL import Image
+from static_variables import PHOTOS_DIR
 
+frame_id = 0
 
 def save_model(
     policy_net,
@@ -88,7 +91,7 @@ def transition(action, env, frame_skip):
         # Image.fromarray(frame).save(
         #     f"{PHOTOS_DIR}/frame_{'died_' if done else ''}{frame_id:05d}.png"
         # )
-        #frame_id += 1
+        frame_id += 1
 
     return np.stack(frame_stack), total_reward, done
 
