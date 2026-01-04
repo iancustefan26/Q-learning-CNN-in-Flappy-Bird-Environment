@@ -118,6 +118,6 @@ def preprocess_frame(frame):
     # --- grayscale (borders = white) ---
     frame = to_grayscale_with_white_borders(frame, border_mask)
 
-    frame = downscale_by_3(frame)
+    frame = cv2.resize(frame, (84, 84), interpolation=cv2.INTER_AREA)
 
-    return frame
+    return frame / 255.0

@@ -57,28 +57,39 @@ class DQN_CNN(nn.Module):
 
         self.pool = nn.MaxPool2d(2, 2)
 
-        self.conv1 = nn.Conv2d(frame_skip, 4, 7, 2, 3)
-        self.conv2 = nn.Conv2d(4, 8, 3, 1, 1)
+        self.conv1 = nn.Conv2d( in_channels=frame_skip, 
+                                out_channels=6,
+                                kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(in_channels=6, out_channels=8, kernel_size=3, stride=1, padding=1)
 
-        self.fc1 = nn.Linear(8 * 10 * 17, 128)
-        self.fc2 = nn.Linear(128, 2)
+        self.fc1 = nn.Linear(8 * 21 * 21, 128)
+        self.fc2 = nn.Linear(128, 64)
+        self.fc3 = nn.Linear(64, 2)
 
         # hooks
-        #self.conv1.register_forward_hook(vis_hook("conv1", lambda: self.step))
+       #self.conv1.register_forward_hook(vis_hook("conv1", lambda: self.step))
         #self.conv2.register_forward_hook(vis_hook("conv2", lambda: self.step))
 
         self.net = nn.Sequential(
             self.conv1,
             nn.ReLU(),
             self.pool,
+
             self.conv2,
             nn.ReLU(),
             self.pool,
+
             nn.Flatten(),
+
             self.fc1,
             nn.LayerNorm(128),
             nn.ReLU(),
-            self.fc2
+
+            self.fc2,
+            nn.LayerNorm(64),
+            nn.ReLU(),
+
+            self.fc3
         )
 
     def forward(self, x):

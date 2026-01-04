@@ -8,7 +8,10 @@ import gymnasium as gym
 import numpy as np
 from model import DQN_CNN
 from preprocessing.preprocessing import preprocess_frame
+from PIL import Image
+from static_variables import PHOTOS_DIR
 
+frame_id = 0
 
 def save_model(
     policy_net,
@@ -60,37 +63,26 @@ def load_model(
     return global_step, best_reward
 
 def transition(action, env, frame_skip):
-    global frame_id
-
     frame_stack = []
-    total_reward = 0
+    total_reward = 0.0
     done = False
 
-    _, reward, terminated, truncated, _ = env.step(action)
-    frame = preprocess_frame(env.render())
-    frame_stack.append(frame)
+    for i in range(frame_skip):
+        if i == 0:
+            act = action
+        else:
+            act = 0  # no-op for frame skip
 
-    total_reward += reward
-    done = terminated or truncated
+        if not done:
+            _, reward, terminated, truncated, _ = env.step(act)
+            frame = preprocess_frame(env.render())
+            done = terminated or truncated
+            total_reward += reward
 
-    for _ in range(frame_skip - 1):
-        if done:
-            frame_stack.append(frame)  # pad with last frame
-            continue
-
-        _, reward, terminated, truncated, _ = env.step(0)
-        frame = preprocess_frame(env.render())
-        frame_stack.append(frame)
-
-        total_reward += reward
-        done = terminated or truncated
-
-        # Image.fromarray(frame).save(
-        #     f"{PHOTOS_DIR}/frame_{'died_' if done else ''}{frame_id:05d}.png"
-        # )
-        #frame_id += 1
+        frame_stack.append(frame)  # pad last frame if done
 
     return np.stack(frame_stack), total_reward, done
+
 
 
 def record_trained_agent_video(
