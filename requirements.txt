@@ -1,8 +1,9 @@
 flappy-bird-gymnasium==0.4.0
-tensorflow
 torch
 torchvision
 numpy
 tqdm
 pillow
 moviepy
+matplotlib
+opencv-python
