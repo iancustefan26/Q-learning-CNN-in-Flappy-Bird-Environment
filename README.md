@@ -1,7 +1,5 @@
 # Q-learning-CNN-in-Flappy-Bird-Enviroment
 
-[](https://github.com/iancustefan26/Q-learning-CNN-in-Flappy-Bird-Environment/blob/main/README.md#under-development-q-learning-cnn-in-flappy-bird-enviroment)
-
 A Deep Q-Learning agent that learns to play Flappy Bird directly from pixels using a CNN in PyTorch. 
 The Q-learning algorithm is implemented from scratch.
 
@@ -16,14 +14,14 @@ The Q-learning algorithm is implemented from scratch.
     -   Gradient clipping
 
 ## Trained Agent
-[](videos/flappy_dqn-episode-0.mp4)
+![Trained Agent](videos/flappy_dqn-episode-0.mp4)
 
 ## Preprocessing
 The agent is trained **purely from pixels**, without access to game state variables.  
 
 Each frame undergoes a preprocessing pipeline to reduce noise while preserving task-relevant information.
 
-[](docs/prepr_pipeline.png)
+![Preprocessing Pipeline](docs/prepr_pipeline.png)
 
 1. **Cropping**
     
@@ -44,7 +42,7 @@ Each frame undergoes a preprocessing pipeline to reduce noise while preserving t
      -   Pixel values scaled to `[0, 1]` for stable neural network training.
 
 ## Architecture
-[](docs/architecture.png)
+![CNN + Linear Architecture](docs/architecture.png)
 ```python
 self.pool  =  nn.MaxPool2d(2, 2)
 
@@ -137,16 +135,16 @@ min_delta  =  0.5  # minimum improvement to count as progress
 
 ## Metrics
 ### Training metrics
-[](docs/metrics/plots/training/episode_reward.png)
-[](docs/metrics/plots/training/epsilon_reward.png)
-[](docs/metrics/plots/training/trans_reward.png)
+![Episode vs Reward](docs/metrics/plots/training/episode_reward.png)
+![Epsilon vs Reward](docs/metrics/plots/training/epsilon_reward.png)
+![Transition vs Reward](docs/metrics/plots/training/trans_reward.png)
 
 ### Testing metrics
-[](docs/metrics/plots/testing/reward_distr.png)
-[](docs/metrics/plots/testing/pipes_per_ep.png)
+![Reward Distribution](docs/metrics/plots/testing/reward_distr.png)
+![Pipes passed per episode](docs/metrics/plots/testing/pipes_per_ep.png)
 
 ## Attempts
-[](dsadsa)
+![Attempts](dsadsa)
 
 
   
