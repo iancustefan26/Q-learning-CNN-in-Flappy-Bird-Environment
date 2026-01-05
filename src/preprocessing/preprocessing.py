@@ -107,17 +107,49 @@ def keep_bird_and_pipe_borders(frame):
     return out, border
 
 
-def preprocess_frame(frame):
+import os
+import cv2
+import numpy as np
+
+def save_debug_image(img, name, out_dir="debug"):
+    os.makedirs(out_dir, exist_ok=True)
+
+    # Convert float images back to uint8 for saving
+    if img.dtype != np.uint8:
+        img = (img * 255).clip(0, 255).astype(np.uint8)
+
+    cv2.imwrite(os.path.join(out_dir, name), img)
+
+
+def preprocess_frame(frame, step_idx=0):
+    # --- original ---
+    #save_debug_image(frame, f"{step_idx}_0_original.png")
+
     # --- crop ---
     h, w, _ = frame.shape
-    frame = frame[:h - h // 5, w // 7:, :]
+    #frame = frame[:h - h // 5, w // 7:, :]
+    frame = frame[:h - h // 5, w // 7: - w // 7, :]
+    
+    #save_debug_image(frame, f"{step_idx}_1_cropped.png")
 
     # --- keep only bird + pipe borders ---
     frame, border_mask = keep_bird_and_pipe_borders(frame)
+    #save_debug_image(frame, f"{step_idx}_2_bird_pipe.png")
+
+    # --- save border mask for inspection ---
+    #save_debug_image(border_mask.astype(np.uint8) * 255,
+                     #f"{step_idx}_2b_border_mask.png")
 
     # --- grayscale (borders = white) ---
     frame = to_grayscale_with_white_borders(frame, border_mask)
+    #save_debug_image(frame, f"{step_idx}_3_grayscale.png")
 
+    # --- resize ---
     frame = cv2.resize(frame, (84, 84), interpolation=cv2.INTER_AREA)
+    #save_debug_image(frame, f"{step_idx}_4_resized.png")
 
-    return frame / 255.0
+    # --- normalize ---
+    frame = frame / 255.0
+    #save_debug_image(frame, f"{step_idx}_5_normalized.png")
+
+    return frame

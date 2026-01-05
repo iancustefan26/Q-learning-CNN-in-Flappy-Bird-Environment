@@ -7,3 +7,4 @@ pillow
 moviepy
 matplotlib
 opencv-python
+pandas
