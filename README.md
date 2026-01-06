@@ -14,7 +14,7 @@ The Q-learning algorithm is implemented from scratch.
     -   Gradient clipping
 
 ## Trained Agent
-![Trained Agent](videos/flappy_dqn-episode-0.mp4)
+![Trained Agent](video.gif)
 
 ## Preprocessing
 The agent is trained **purely from pixels**, without access to game state variables.  
@@ -135,13 +135,13 @@ min_delta  =  0.5  # minimum improvement to count as progress
 
 ## Metrics
 ### Training metrics
-![Episode vs Reward](docs/metrics/plots/training/episode_reward.png)
-![Epsilon vs Reward](docs/metrics/plots/training/epsilon_reward.png)
-![Transition vs Reward](docs/metrics/plots/training/trans_reward.png)
+![Episode vs Reward](docs/metrics/plots/v2/training/episode_reward.png)
+![Epsilon vs Reward](docs/metrics/plots/v2/training/epsilon_reward.png)
+![Transition vs Reward](docs/metrics/plots/v2/training/trans_reward.png)
 
 ### Testing metrics
-![Reward Distribution](docs/metrics/plots/testing/reward_distr.png)
-![Pipes passed per episode](docs/metrics/plots/testing/pipes_per_ep.png)
+![Reward Distribution](docs/metrics/plots/v2/testing/reward_distr.png)
+![Pipes passed per episode](docs/metrics/plots/v2/testing/pipes_per_ep.png)
 
 ## Attempts
 ![Attempts](dsadsa)
