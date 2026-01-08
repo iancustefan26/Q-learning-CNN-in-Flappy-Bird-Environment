@@ -122,6 +122,7 @@ min_delta  =  0.5  # minimum improvement to count as progress
 ## Metrics
 ### Training metrics
 ![Episode vs Reward](docs/metrics/plots/v2/training/episode_reward.png)
+![Episode vs Reward Only mean](docs/metrics/plots/v2/training/episode_reward_mean.png)
 ![Epsilon vs Reward](docs/metrics/plots/v2/training/epsilon_reward.png)
 ![Transition vs Reward](docs/metrics/plots/v2/training/trans_reward.png)
 
