@@ -45,7 +45,7 @@ Each frame undergoes a preprocessing pipeline to reduce noise while preserving t
 
 The input consists of 4 consecutive frames of the enviroment so the network can extract information about the velocity and the direction that the bird is going to.
 
-![CNN + Linear Architecture](docs/architecture_v1.png)
+![CNN + Linear Architecture](docs/architecture_v2.png)
 ```python
 self.pool = nn.MaxPool2d(2, 2)
 
