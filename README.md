@@ -126,6 +126,8 @@ min_delta  =  0.5  # minimum improvement to count as progress
 ![Epsilon vs Reward](docs/metrics/plots/v2/training/epsilon_reward.png)
 ![Transition vs Reward](docs/metrics/plots/v2/training/trans_reward.png)
 
+![3d plot](docs/metrics/plots/v2/training/3d.png)
+
 ### Testing metrics
 ![Reward Distribution](docs/metrics/plots/v2/testing/reward_distr.png)
 ![Pipes passed per episode](docs/metrics/plots/v2/testing/pipes_per_ep.png)
