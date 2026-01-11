@@ -45,6 +45,8 @@ Each frame undergoes a preprocessing pipeline to reduce noise while preserving t
 
 The input consists of 4 consecutive frames of the enviroment so the network can extract information about the velocity and the direction that the bird is going to.
 
+I used a higher stride on the first layers instead of Pooling because in Flappy Bird the infromation from the frames is mostly redundant, so I thought it would be more optimal to sacrifice redundant pixels on the first 2 convolutional layers. (most of the background is black, with just a little black-white switch when the kernel(filter) encounters a pipe or the bird when "scanning" the frame).
+
 ![CNN + Linear Architecture](docs/architecture_v4.png)
 ```python
 
@@ -75,6 +77,8 @@ self.net = nn.Sequential(
 ```
 
 ## Hyperparameters
+
+As far as I experienced this experiment, I have noticed that this game is a perfect-play game. One wrong move can make the bird die. I started with epsilon=0.1 (10% chance of makeing a random move when taking an action) and decayed to epsilon=0.0001(0,01%). In my architecture a state is represented by 4 frames. The game is played at 30 FPS. So the birt takes 30 / 4 = 7.5 actions every second. From these, we say that 1/10 * 7,5 = 0,75 actions will be taken randomly. Apllying a simple 3 rule, the bird takes a random action every 1,33 seconds. This action could be either flap or no flap, and that gives us the intuiton that it will take a random flap every 2,66 seconds. This is huge for this kind of game. So thats why I started with epsilon = 0.1 instead of ~1.0 (a default value for most Reinforcement Learning experiments).
 
 ```python
 # Environment
@@ -119,20 +123,20 @@ min_delta = 0.5           # minimum improvement to count as progress
 ![Episode vs Reward](docs/metrics/plots/v4/training/episode_reward.png)
 ![Episode vs Reward Only mean](docs/metrics/plots/v4/training/episode_reward_avg.png)
 
-# Epsilon Decay: Exploration vs Exploitation
+## Epsilon Greedy Decay: Exploration vs Exploitation
 ![Epsilon vs Reward](docs/metrics/plots/v4/training/epsilon_reward.png)
 ![3d plot](docs/metrics/plots/v4/training/3d.png)
 
-# Training time
+## Training time
 ![training](docs/metrics/plots/v4/training/reward_time.png)
 
-### Testing metrics
+## Testing metrics
 ![Pipes passed per episode](docs/metrics/plots/v4/testing/pipes_per_ep.png)
 ![Reward Distribution](docs/metrics/plots/v4/testing/reward_distr.png)
 
 ## Past Attempts Comparison v3-v4
 ![avg](docs/metrics/plots/v3-v4-comparison/avg.png)
-![best](docs/metrics/plots/vv3-v4-comparison/best.png)
+![best](docs/metrics/plots/v3-v4-comparison/best.png)
 
 
 ## Other Past Attempts
