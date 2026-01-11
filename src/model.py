@@ -55,46 +55,37 @@ class DQN_CNN(nn.Module):
         super().__init__()
         self.step = 0
 
-        self.pool = nn.MaxPool2d(2, 2)
-
         self.conv1 = nn.Conv2d( in_channels=frame_skip, 
-                                out_channels=8,
-                                kernel_size=3, stride=1, padding=1)
-        self.conv2 = nn.Conv2d(in_channels=8, out_channels=16, kernel_size=3, stride=1, padding=1)
-        self.conv3 = nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3, stride=1, padding=1)
+                                out_channels=32,
+                                kernel_size=8, stride=4)
+        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2)
+        self.conv3 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1)
 
-        self.fc1 = nn.Linear(32 * 10 * 10, 256)
-        self.fc2 = nn.Linear(256, 128)
-        self.fc3 = nn.Linear(128, 2)
+        self.fc1 = nn.Linear(64 * 7 * 7, 512)
+        self.fc2 = nn.Linear(512, 2)
 
         # hooks
-       #self.conv1.register_forward_hook(vis_hook("conv1", lambda: self.step))
-        #self.conv2.register_forward_hook(vis_hook("conv2", lambda: self.step))
+        # self.conv1.register_forward_hook(vis_hook("conv1", lambda: self.step))
+        # self.conv2.register_forward_hook(vis_hook("conv2", lambda: self.step))
+        # self.conv3.register_forward_hook(vis_hook("conv3", lambda: self.step))
 
         self.net = nn.Sequential(
             self.conv1,
             nn.ReLU(),
-            self.pool,
 
             self.conv2,
             nn.ReLU(),
-            self.pool,
 
             self.conv3,
             nn.ReLU(),
-            self.pool,
 
             nn.Flatten(),
 
             self.fc1,
-            nn.LayerNorm(256),
+            nn.LayerNorm(512),
             nn.ReLU(),
 
-            self.fc2,
-            nn.LayerNorm(128),
-            nn.ReLU(),
-
-            self.fc3
+            self.fc2
         )
 
     def forward(self, x):

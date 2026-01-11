@@ -45,6 +45,134 @@ Each frame undergoes a preprocessing pipeline to reduce noise while preserving t
 
 The input consists of 4 consecutive frames of the enviroment so the network can extract information about the velocity and the direction that the bird is going to.
 
+![CNN + Linear Architecture](docs/architecture_v4.png)
+```python
+
+self.conv1 = nn.Conv2d(in_channels=frame_skip,out_channels=32, kernel_size=8, stride=4)
+self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2)
+self.conv3 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1)
+
+self.fc1 = nn.Linear(64 * 7 * 7, 512)
+self.fc2 = nn.Linear(512, 2)
+
+self.net = nn.Sequential(
+	self.conv1,
+	nn.ReLU(),
+
+	self.conv2,
+	nn.ReLU(),
+
+	self.conv3,
+	nn.ReLU(),
+
+	nn.Flatten(),
+
+	self.fc1,
+	nn.ReLU(),
+
+	self.fc2
+)
+```
+
+## Hyperparameters
+
+```python
+# Environment
+frame_skip = 4
+train_every = 4   
+
+# Training
+data_type = torch.float32
+batch_size = 64
+T_iterations = 1_000_000
+initial_exploration = 15_000
+
+# Replay buffer
+replay_buffer_size = 150_000
+
+# DQN
+alpha = 1e-4
+gamma = 0.99
+
+# Target network (soft update)
+target_network_incorporation_rate = 0.005
+
+# Epsilon-greedy
+e_start = 0.1
+e_end = 0.0001
+k_epsilon = -1 / T_iterations * np.log(e_end / e_start)
+decay_factor = np.exp(-k_epsilon)
+
+
+
+# Early stopping parameters
+avg_window = 100          # moving average window
+patience = 2000            # episodes to wait without improvement
+min_delta = 0.5           # minimum improvement to count as progress
+```
+
+
+## Metrics
+### Training metrics
+
+## Episode vs Reward
+![Episode vs Reward](docs/metrics/plots/v4/training/episode_reward.png)
+![Episode vs Reward Only mean](docs/metrics/plots/v4/training/episode_reward_avg.png)
+
+# Epsilon Decay: Exploration vs Exploitation
+![Epsilon vs Reward](docs/metrics/plots/v4/training/epsilon_reward.png)
+![3d plot](docs/metrics/plots/v4/training/3d.png)
+
+# Training time
+![training](docs/metrics/plots/v4/training/reward_time.png)
+
+### Testing metrics
+![Pipes passed per episode](docs/metrics/plots/v4/testing/pipes_per_ep.png)
+![Reward Distribution](docs/metrics/plots/v4/testing/reward_distr.png)
+
+## Past Attempts Comparison v3-v4
+![avg](docs/metrics/plots/v3-v4-comparison/avg.png)
+![best](docs/metrics/plots/vv3-v4-comparison/best.png)
+
+
+## Other Past Attempts
+## v1
+
+![Architecture](docs/architecture_v1.png)
+
+## Hyperparameters
+
+```python
+# Environment
+frame_skip = 4
+
+# Training
+data_type = torch.float32
+batch_size = 64
+T_iterations = 50000 
+
+# Replay buffer
+replay_buffer_size = 20000
+# DQN
+alpha = 1e-4
+gamma = 0.99
+
+# Target network (soft update)
+target_network_incorporation_rate = 0.005
+
+# Epsilon-greedy
+e_start = 1.0
+e_end = 0.01
+k_epsilon = -1 / T_iterations * np.log(e_end / e_start)
+```
+
+## Metrics v1
+### Training metrics
+![Episode vs Reward](docs/metrics/plots/v1/training/episode_reward.png)
+![Epsilon vs Reward](docs/metrics/plots/v1/training/epsilon_reward.png)
+![Transition vs Reward](docs/metrics/plots/v1/training/trans_reward.png)
+
+## v2
 ![CNN + Linear Architecture](docs/architecture_v2.png)
 ```python
 self.pool = nn.MaxPool2d(2, 2)
@@ -131,45 +259,6 @@ min_delta  =  0.5  # minimum improvement to count as progress
 ### Testing metrics
 ![Reward Distribution](docs/metrics/plots/v2/testing/reward_distr.png)
 ![Pipes passed per episode](docs/metrics/plots/v2/testing/pipes_per_ep.png)
-
-## Other Past Attempts
-## v1
-
-![Architecture](docs/architecture_v1.png)
-
-## Hyperparameters
-
-```python
-# Environment
-frame_skip = 4
-
-# Training
-data_type = torch.float32
-batch_size = 64
-T_iterations = 50000 
-
-# Replay buffer
-replay_buffer_size = 20000
-# DQN
-alpha = 1e-4
-gamma = 0.99
-
-# Target network (soft update)
-target_network_incorporation_rate = 0.005
-
-# Epsilon-greedy
-e_start = 1.0
-e_end = 0.01
-k_epsilon = -1 / T_iterations * np.log(e_end / e_start)
-```
-
-## Metrics v1
-### Training metrics
-![Episode vs Reward](docs/metrics/plots/v1/training/episode_reward.png)
-![Epsilon vs Reward](docs/metrics/plots/v1/training/epsilon_reward.png)
-![Transition vs Reward](docs/metrics/plots/v1/training/trans_reward.png)
-
-
   
 ## Contributing
 Developed by Iancu Stefan-Teodor for academic purposes. Submit pull requests or open issues for suggestions.
