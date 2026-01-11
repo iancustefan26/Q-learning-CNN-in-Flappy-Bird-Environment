@@ -78,7 +78,10 @@ self.net = nn.Sequential(
 
 ## Hyperparameters
 
-As far as I experienced this experiment, I have noticed that this game is a perfect-play game. One wrong move can make the bird die. I started with epsilon=0.1 (10% chance of makeing a random move when taking an action) and decayed to epsilon=0.0001(0,01%). In my architecture a state is represented by 4 frames. The game is played at 30 FPS. So the birt takes 30 / 4 = 7.5 actions every second. From these, we say that 1/10 * 7,5 = 0,75 actions will be taken randomly. Apllying a simple 3 rule, the bird takes a random action every 1,33 seconds. This action could be either flap or no flap, and that gives us the intuiton that it will take a random flap every 2,66 seconds. This is huge for this kind of game. So thats why I started with epsilon = 0.1 instead of ~1.0 (a default value for most Reinforcement Learning experiments).
+As far as I experienced this experiment, I have noticed that this game is a perfect-play game. One wrong action can make the bird die. I started with epsilon=0.1 (10% chance of making a random action) and decayed to epsilon=0.0001(0,01%).
+
+In my architecture, a state is represented by 4 consecutive frames. The game is played at 30 FPS.
+So the birt takes 30 / 4 = 7.5 actions every second. From these, we say that 1/10 * 7,5 = 0,75 actions will be taken randomly. Apllying a simple 3 rule, the bird takes a random action every 1,33 seconds. This action could be either flap or no flap, and that gives us the intuiton that it will take a random flap every 2,66 seconds. This is huge for this kind of game. So thats why I started with epsilon = 0.1 instead of ~1.0 (a default value for most Reinforcement Learning experiments).
 
 ```python
 # Environment
