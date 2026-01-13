@@ -145,7 +145,7 @@ def preprocess_frame(frame, step_idx=0):
     #save_debug_image(frame, f"{step_idx}_3_grayscale.png")
 
     # --- resize ---
-    frame = cv2.resize(frame, (84, 84), interpolation=cv2.INTER_AREA)
+    frame = cv2.resize(frame, (57, 57), interpolation=cv2.INTER_AREA)
     #save_debug_image(frame, f"{step_idx}_4_resized.png")
 
     # --- normalize ---

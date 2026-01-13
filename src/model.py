@@ -4,6 +4,8 @@ import torch.nn as nn
 import os
 import torchvision.utils as vutils
 
+import torch.nn.functional as F
+
 def save_input_frames(x, filename):
     """
     x: (B, frame_skip, H, W)
@@ -51,43 +53,36 @@ def vis_hook(name, step_getter):
     return hook
 
 class DQN_CNN(nn.Module):
-    def __init__(self, frame_skip=4):
+    def __init__(self, frame_skip=4, n_actions=2):
         super().__init__()
         self.step = 0
 
-        self.conv1 = nn.Conv2d( in_channels=frame_skip, 
-                                out_channels=32,
-                                kernel_size=8, stride=4)
-        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2)
-        self.conv3 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1)
+        # ---------- CNN feature extractor ----------
+        self.conv1 = nn.Conv2d(frame_skip, 32, kernel_size=6, stride=3)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=4, stride=2)
+        self.conv3 = nn.Conv2d(64, 64, kernel_size=3, stride=1)
 
-        self.fc1 = nn.Linear(64 * 7 * 7, 512)
-        self.fc2 = nn.Linear(512, 2)
+        # ---------- Shared FC ----------
+        self.fc = nn.Linear(64 * 6 * 6, 512)
 
-        # hooks
-        # self.conv1.register_forward_hook(vis_hook("conv1", lambda: self.step))
-        # self.conv2.register_forward_hook(vis_hook("conv2", lambda: self.step))
-        # self.conv3.register_forward_hook(vis_hook("conv3", lambda: self.step))
-
-        self.net = nn.Sequential(
-            self.conv1,
-            nn.ReLU(),
-
-            self.conv2,
-            nn.ReLU(),
-
-            self.conv3,
-            nn.ReLU(),
-
-            nn.Flatten(),
-
-            self.fc1,
-            nn.LayerNorm(512),
-            nn.ReLU(),
-
-            self.fc2
-        )
+        # ---------- Dueling heads ----------
+        self.value = nn.Linear(512, 1)          # V(s)
+        self.advantage = nn.Linear(512, n_actions)  # A(s,a)
 
     def forward(self, x):
         self.step += 1
-        return self.net(x)
+
+        x = F.relu(self.conv1(x))
+        x = F.relu(self.conv2(x))
+        x = F.relu(self.conv3(x))
+
+        x = x.view(x.size(0), -1)
+        x = F.relu(self.fc(x))
+
+        value = self.value(x)                    # [B, 1]
+        advantage = self.advantage(x)            # [B, A]
+
+        # ---- Dueling aggregation ----
+        q = value + advantage - advantage.mean(dim=1, keepdim=True)
+
+        return q
