@@ -79,8 +79,8 @@ self.net = nn.Sequential(
 ## Hyperparameters
 
 ### Action space
-0 - do nothing
-1 - flap
+- 0 - do nothing
+- 1 - flap
 ### Rewards
 +0.1 - every frame it stays alive
 +1.0 - successfully passing a pipe
