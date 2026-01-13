@@ -78,6 +78,15 @@ self.net = nn.Sequential(
 
 ## Hyperparameters
 
+### Action space
+0 - do nothing
+1 - flap
+### Rewards
++0.1 - every frame it stays alive
++1.0 - successfully passing a pipe
+-1.0 - dying
+−0.5 - touch the top of the screen
+
 As far as I experienced this experiment, I have noticed that this game is a perfect-play game. One wrong action can make the bird die. I started with epsilon=0.1 (10% chance of making a random action) and decayed to epsilon=0.0001(0,01%).
 
 In my architecture, a state is represented by 4 consecutive frames. The game is played at 30 FPS.
